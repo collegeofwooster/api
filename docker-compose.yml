@@ -1,9 +1,9 @@
 version: '3'
 services:
   directory-api:
-    container_name: wooster-directory
+    container_name: wooster-api
     build: .
     ports:
-      - "15005:80"
+      - "15000:80"
     volumes:
       - ./html:/var/www/html
