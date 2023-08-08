@@ -4,9 +4,6 @@
 require( '../config.php' );
 
 
-// close the table
-$directory_table .= "</table>";
-
 // set the cache filenames
 $cache_file_json = './cache/directory.json';
 $cache_file_html = './cache/directory.html';
@@ -63,6 +60,9 @@ if ( file_exists( $cache_file_html ) ) {
             $directory_table .= '<tr><td>' . $row['NAME'] . "</td><td>" . $row['POSITION'] . "</td><td nowrap=\"nowrap\">" . ( !empty( $row['OFFICE'] ) ? $row['OFFICE'] . '<br />' : '' ) . ( !empty( $row['PHONE1'] ) ? $row['PHONE1'] . ( !empty( $ext['EXT'] ) ? ' ext #' . $ext['EXT'] . "<br />" : "" ) : '' ) . "<a href=\"mailto:" . $row['EMAIL'] . "\">" . $row['EMAIL'] . "</a></td></tr>";
 
         }
+        
+        // close the table
+        $directory_table .= "</table>";
 
         // store the json results in its own file
         file_put_contents( './cache/directory.json', json_encode( $results_final ) );
