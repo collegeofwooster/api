@@ -9,7 +9,7 @@ $cache_file_json = './cache/directory.json';
 $cache_file_html = './cache/directory.html';
 
 // refresh the cache if the cache file is older than 30 minutes
-if ( filemtime( $cache_file_html ) < ( time() - ( 60 * 60 ) ) || !file_exists( $cache_file_html ) || isset( $_REQUEST['fresh'] ) ) {
+if ( filemtime( $cache_file_html ) < ( time() - ( 60 * 10 ) ) || !file_exists( $cache_file_html ) || isset( $_REQUEST['fresh'] ) ) {
 
     // establish database connection
     $dbhandle = odbc_connect("Driver={ODBC Driver 17 for SQL Server};Server=" . _IS_SERVER . ";Database=" . _IS_DB . ";", _IS_USER, _IS_PASS )
