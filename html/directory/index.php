@@ -3,7 +3,6 @@
 // include the configuration
 require( '../config.php' );
 
-
 // set the cache filenames
 $cache_file_json = './cache/directory.json';
 $cache_file_html = './cache/directory.html';
@@ -20,7 +19,6 @@ if ( filemtime( $cache_file_html ) < ( time() - ( 60 * 10 ) ) || !file_exists( $
     $query .= "FROM X_WEB_DIRECTORY_AZ ";
     $query .= "WHERE LOWER(POSITION) NOT LIKE LOWER('%emeritus%') AND LOWER(POSITION) NOT LIKE LOWER('%emerita%') ";
     $query .= "ORDER BY NAME;";
-
 
     // begin the results array
     $results_final = array();
