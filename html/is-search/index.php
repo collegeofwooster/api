@@ -1,12 +1,5 @@
 <?php 
 
-
-// some headers to allow access to any domain
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST');
-header("Access-Control-Allow-Headers: X-Requested-With");
-
-
 // ini_set('display_errors', true);
 // ini_set('error_reporting', E_ALL ^ E_NOTICE );
 
