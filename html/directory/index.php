@@ -1,5 +1,11 @@
 <?php
 
+// some headers to allow access to any domain
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST');
+header("Access-Control-Allow-Headers: X-Requested-With");
+
+
 // include the configuration
 require( '../config.php' );
 
