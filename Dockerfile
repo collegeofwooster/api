@@ -19,10 +19,10 @@ RUN curl https://packages.microsoft.com/config/debian/11/prod.list | tee /etc/ap
 RUN apt-get update 
 
 # unixodbc development headers
-RUN sudo apt-get install -y unixodbc-dev
+RUN apt-get install -y unixodbc-dev
 
 # kerberos library for debian-slim distributions
-RUN sudo apt-get install -y libgssapi-krb5-2
+RUN apt-get install -y libgssapi-krb5-2
 
 # install odbc driver for MSSQL 18
 RUN ACCEPT_EULA=Y apt-get install -y msodbcsql18
