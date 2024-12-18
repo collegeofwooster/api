@@ -7,12 +7,26 @@ require( '../config.php' );
 $cache_file_json = './cache/directory.json';
 $cache_file_html = './cache/directory.html';
 
+$serverName = _IS_SERVER; // Replace with your actual server name or IP address
+$connectionOptions = array(
+    "Database" => _IS_DB, // Replace with your database name
+    "Uid" => _IS_USER, // Replace with your database username
+    "PWD" => _IS_PASS, // Replace with your database password
+    "Encrypt" => "true",
+    "TrustServerCertificate" => "true"
+);
+
 // refresh the cache if the cache file is older than 30 minutes
 if ( filemtime( $cache_file_html ) < ( time() - ( 60 * 10 ) ) || !file_exists( $cache_file_html ) || isset( $_REQUEST['fresh'] ) ) {
 
     // establish database connection
-    $dbhandle = odbc_connect("Driver={ODBC Driver 17 for SQL Server};Server=" . _IS_SERVER . ";Database=" . _IS_DB . ";", _IS_USER, _IS_PASS )
-        or die("Could not connect to " . _IS_SERVER);
+    $conn = sqlsrv_connect($serverName, $connectionOptions);
+
+    if ( $conn === false ) {
+        die( print_r( sqlsrv_errors(), true ) );
+    } else {
+        die( 'connected' );
+    }
 
     // the query
     $query = "SELECT NAME, POSITION, EXT, EMAIL, PHONE1, PERSONAL_PRONOUN ";
