@@ -18,6 +18,12 @@ RUN curl https://packages.microsoft.com/config/debian/11/prod.list | tee /etc/ap
 # update apt repos again
 RUN apt-get update 
 
+# unixodbc development headers
+RUN sudo apt-get install -y unixodbc-dev
+
+# kerberos library for debian-slim distributions
+RUN sudo apt-get install -y libgssapi-krb5-2
+
 # install odbc driver for MSSQL 18
 RUN ACCEPT_EULA=Y apt-get install -y msodbcsql18
 RUN ACCEPT_EULA=Y apt-get install -y mssql-tools18
@@ -25,13 +31,6 @@ RUN ACCEPT_EULA=Y apt-get install -y mssql-tools18
 # add it to path
 RUN echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
 RUN source ~/.bashrc
-
-# unixodbc development headers
-RUN sudo apt-get install -y unixodbc-dev
-
-# kerberos library for debian-slim distributions
-RUN sudo apt-get install -y libgssapi-krb5-2
-
 # set timezone
 RUN echo "America/New York" > /etc/timezone
 
