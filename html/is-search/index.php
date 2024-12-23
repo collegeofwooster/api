@@ -1,15 +1,8 @@
 <?php 
 
-// ini_set('display_errors', true);
-// ini_set('error_reporting', E_ALL ^ E_NOTICE );
+require( '../config.php' );
 
-require('../config.php');
-
-// variables
-$server = _IS_SERVER;
-$user = _IS_USER;
-$pass = _IS_PASS;
-$db = _IS_DB;  
+// interpret query vars
 $name = preg_replace('/[^A-Za-z0-9\-]/', '', $_REQUEST['n']);
 $year = preg_replace('/[^0-9]/', '', $_REQUEST['y']);
 $title = str_replace('%20', ' ', $_REQUEST['t']);
@@ -19,83 +12,97 @@ $major = str_replace('%20', ' ', $major);
 $major = preg_replace('/[^A-Za-z0-9\&\s]/', '', $major);
 $advisor = preg_replace('/[^A-Za-z0-9\-]/', '', $_REQUEST['a']);
 
-//connect
 
-//$dbhandle = odbc_connect("Driver=ODBC Driver 11 for SQL Server;Server=$server;Database=$db;", $user, $pass)
-	//or die("Could not connect to $server");
+// database connection
+$serverName = _IS_SERVER; // Replace with your actual server name or IP address
+$connectionOptions = array(
+    "Database" => _IS_DB, // Replace with your database name
+    "Uid" => _IS_USER, // Replace with your database username
+    "PWD" => _IS_PASS, // Replace with your database password
+    "Encrypt" => "true",
+    "TrustServerCertificate" => "true"
+);
 
-$dbhandle = odbc_connect("Driver={ODBC Driver 17 for SQL Server};Server=" . _IS_SERVER . ";Database=" . _IS_DB . ";", _IS_USER, _IS_PASS )
-    or die("Could not connect to " . _IS_SERVER);
+// establish database connection
+$conn = sqlsrv_connect($serverName, $connectionOptions);
 
-//query
+// if our connection failed, die with error
+if ( $conn === false ) {
+	die( print_r( sqlsrv_errors(), true ) );
+}
 
+
+// assemble the query
 $query = "SELECT STUDENT_FIRST, STUDENT_LAST, IS_TITLE, YEAR, MAJOR_1, MAJOR_2, ADVISOR_FIRST, ADVISOR_LAST ";
 $query .= "FROM IS_TITLES ";
 $query .= "WHERE LOWER(STUDENT_LAST) LIKE LOWER('%$name%') ";
 $query .= "AND LOWER(IS_TITLE) LIKE LOWER('%$title%') ";
 
-if($year == ''){
+// if a year is passed in
+if ( $year == '' ) {
 	$query .= "AND (LOWER(YEAR) LIKE LOWER('%$year%') OR YEAR IS NULL) ";
-}
-
-else{
+} else {
 	$query .= "AND (LOWER(YEAR) LIKE LOWER('%$year%')) ";
 }
 
-if($advisor == ''){
+// if an advisor is passed in
+if ( $advisor == '' ) {
 	$query .= "AND (LOWER(ADVISOR_LAST) LIKE LOWER('%$advisor%') OR ADVISOR_LAST IS NULL) ";
-}
-
-else{
+} else {
 	$query .= "AND LOWER(ADVISOR_LAST) LIKE LOWER('%$advisor%') ";
 }
 
-if($major == ''){
+// if a major is passed in
+if ( $major == '' ) {
 	$query .= "AND (LOWER(MAJOR_1) LIKE LOWER('%$major%') OR LOWER(MAJOR_2) LIKE LOWER('%$major%') OR MAJOR_1 IS NULL) ";
-}
-
-else{
+} else {
 	$query .= "AND (LOWER(MAJOR_1) LIKE LOWER('%$major%') OR LOWER(MAJOR_2) LIKE LOWER('%$major%')) ";
 }
 
+// query sorting
 $query .= "ORDER BY STUDENT_LAST, STUDENT_FIRST";
 
-//execute
 
-$result = odbc_exec($dbhandle, $query);
+// execute the query
+$result = sqlsrv_query( $conn, $query );
 
-//display
+// start outputting the results table
+print "<table id=\"is-table\"><tr><th>Student</th><th>Year</th><th>I.S. Title</th><th nowrap=\"nowrap\">Major 1</th><th nowrap=\"nowrap\">Major 2</th><th>Advisor</th></tr><span id=\"errortext\">";
 
-echo("<table id=\"is-table\"><tr><th>Student</th><th>Year</th><th>I.S. Title</th><th nowrap=\"nowrap\">Major 1</th><th nowrap=\"nowrap\">Major 2</th><th>Advisor</th></tr><span id=\"errortext\">");
+// if we don't have any results
+if ( sqlsrv_num_rows( $result ) == 0 ) {
 
-if( odbc_num_rows( $result ) == 0 ) {
-	echo("\n<tr><td colspan=\"6\" valign=\"center\" align=\"center\">No results</td></tr>");
-}
+	// show 'no results' message
+	print "\n<tr><td colspan=\"6\" valign=\"center\" align=\"center\">No results</td></tr>" ;
 
-else{
-	while(odbc_fetch_row($result)){
+} else {
 
-		$first = odbc_result($result,'STUDENT_FIRST');
-		$last = odbc_result($result,'STUDENT_LAST');
+	// loop through the results
+	while ( $row = sqlsrv_fetch_array( $result ) ){
+
+		$first = $row['STUDENT_FIRST'];
+		$last = $row['STUDENT_LAST'];
 		$name = $first . " " . $last;
-		$title = odbc_result($result,'IS_TITLE');
-		$year = odbc_result($result,'YEAR');
-		$major1 = odbc_result($result,'MAJOR_1');
+		$title = $row['IS_TITLE'];
+		$year = $row['YEAR'];
+		$major1 = $row['MAJOR_1'];
 		$major2 = "none";
-		$major2 = odbc_result($result,'MAJOR_2');
-		$afirst = odbc_result($result,'ADVISOR_FIRST');
-		$alast = odbc_result($result,'ADVISOR_LAST');
+		$major2 = $row['MAJOR_2'];
+		$afirst = $row['ADVISOR_FIRST'];
+		$alast = $row['ADVISOR_LAST'];
 		$advisor = $afirst . " " . $alast;
 
-		echo("\n<tr><td nowrap=\"nowrap\">" . $name . "</td><td>" . $year . "</td><td>" . $title . "</td><td>" . $major1 . "</td><td>" . $major2 . "</td><td nowrap=\"nowrap\">" . $advisor . "</td></tr>");
+		// output the row
+		print "\n<tr><td nowrap=\"nowrap\">" . $name . "</td><td>" . $year . "</td><td>" . $title . "</td><td>" . $major1 . "</td><td>" . $major2 . "</td><td nowrap=\"nowrap\">" . $advisor . "</td></tr>";
 		
 	}
+
 }
 
-echo("</span></table>");
+print "</span></table>";
 
-//close the connection
 
-odbc_free_result($result);
-odbc_close($dbhandle);
+// close the connection
+sqlsrv_free_stmt( $result );
+sqlsrv_close( $conn );
 

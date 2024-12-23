@@ -24,8 +24,6 @@ if ( filemtime( $cache_file_html ) < ( time() - ( 60 * 10 ) ) || !file_exists( $
 
     if ( $conn === false ) {
         die( print_r( sqlsrv_errors(), true ) );
-    } else {
-        die( 'connected' );
     }
 
     // the query
@@ -38,7 +36,7 @@ if ( filemtime( $cache_file_html ) < ( time() - ( 60 * 10 ) ) || !file_exists( $
     $results_final = array();
 
     // execute the query
-    $result = odbc_exec( $dbhandle, $query );
+    $result = sqlsrv_query( $conn, $query );
 
     // begin the directory table string
     $directory_table = '<table cellpadding=0 cellspacing=0 border=0 class="employee-directory dataTable display">';
@@ -47,7 +45,7 @@ if ( filemtime( $cache_file_html ) < ( time() - ( 60 * 10 ) ) || !file_exists( $
     $directory_table .= '<thead><tr><th>Name</th><th>Title</th><th>Contact Information</th></tr></thead>';
 
     // begin looping thru the results
-    while ( $row = odbc_fetch_array( $result ) ) {
+    while ( $row = sqlsrv_fetch_array( $result ) ) {
 
         // separate the position from the office
         $temp = explode( ' (', $row['POSITION'] );
@@ -72,6 +70,10 @@ if ( filemtime( $cache_file_html ) < ( time() - ( 60 * 10 ) ) || !file_exists( $
 
     // close the table
     $directory_table .= "</table>";
+
+    // close the connection
+    sqlsrv_free_stmt( $result );
+    sqlsrv_close( $conn );
 
     // store the json results in its own file
     file_put_contents( './cache/directory.json', json_encode( $results_final ) );
