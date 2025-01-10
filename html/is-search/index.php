@@ -24,7 +24,7 @@ $connectionOptions = array(
 );
 
 // establish database connection
-$conn = sqlsrv_connect($serverName, $connectionOptions);
+$conn = sqlsrv_connect( $serverName, $connectionOptions );
 
 // if our connection failed, die with error
 if ( $conn === false ) {
@@ -39,29 +39,22 @@ $query .= "WHERE LOWER(STUDENT_LAST) LIKE LOWER('%$name%') ";
 $query .= "AND LOWER(IS_TITLE) LIKE LOWER('%$title%') ";
 
 // if a year is passed in
-if ( $year == '' ) {
-	$query .= "AND (LOWER(YEAR) LIKE LOWER('%$year%') OR YEAR IS NULL) ";
-} else {
+if ( $year != '' ) {
 	$query .= "AND (LOWER(YEAR) LIKE LOWER('%$year%')) ";
 }
 
 // if an advisor is passed in
-if ( $advisor == '' ) {
-	$query .= "AND (LOWER(ADVISOR_LAST) LIKE LOWER('%$advisor%') OR ADVISOR_LAST IS NULL) ";
-} else {
+if ( $advisor != '' ) {
 	$query .= "AND LOWER(ADVISOR_LAST) LIKE LOWER('%$advisor%') ";
 }
 
 // if a major is passed in
-if ( $major == '' ) {
-	$query .= "AND (LOWER(MAJOR_1) LIKE LOWER('%$major%') OR LOWER(MAJOR_2) LIKE LOWER('%$major%') OR MAJOR_1 IS NULL) ";
-} else {
+if ( $major != '' ) {
 	$query .= "AND (LOWER(MAJOR_1) LIKE LOWER('%$major%') OR LOWER(MAJOR_2) LIKE LOWER('%$major%')) ";
 }
 
 // query sorting
 $query .= "ORDER BY STUDENT_LAST, STUDENT_FIRST";
-
 
 // execute the query
 $result = sqlsrv_query( $conn, $query );
@@ -70,10 +63,10 @@ $result = sqlsrv_query( $conn, $query );
 print "<table id=\"is-table\"><tr><th>Student</th><th>Year</th><th>I.S. Title</th><th nowrap=\"nowrap\">Major 1</th><th nowrap=\"nowrap\">Major 2</th><th>Advisor</th></tr><span id=\"errortext\">";
 
 // if we don't have any results
-if ( sqlsrv_num_rows( $result ) == 0 ) {
+if ( $result === false ) {
 
 	// show 'no results' message
-	print "\n<tr><td colspan=\"6\" valign=\"center\" align=\"center\">No results</td></tr>" ;
+	print "\n<tr><td colspan=\"6\" valign=\"center\" align=\"center\">No results</td></tr>";
 
 } else {
 
@@ -86,7 +79,6 @@ if ( sqlsrv_num_rows( $result ) == 0 ) {
 		$title = $row['IS_TITLE'];
 		$year = $row['YEAR'];
 		$major1 = $row['MAJOR_1'];
-		$major2 = "none";
 		$major2 = $row['MAJOR_2'];
 		$afirst = $row['ADVISOR_FIRST'];
 		$alast = $row['ADVISOR_LAST'];
