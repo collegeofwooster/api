@@ -35,8 +35,8 @@ if ( $conn === false ) {
 // assemble the query
 $query = "SELECT STUDENT_FIRST, STUDENT_LAST, IS_TITLE, YEAR, MAJOR_1, MAJOR_2, ADVISOR_FIRST, ADVISOR_LAST ";
 $query .= "FROM IS_TITLES ";
-$query .= "WHERE LOWER(STUDENT_LAST) LIKE LOWER('%$name%') ";
-$query .= "AND LOWER(IS_TITLE) LIKE LOWER('%$title%') ";
+//$query .= "WHERE LOWER(STUDENT_LAST) LIKE LOWER('%$name%') ";
+//$query .= "AND LOWER(IS_TITLE) LIKE LOWER('%$title%') ";
 
 // if a year is passed in
 if ( $year != '' ) {
