@@ -1,5 +1,7 @@
 <?php 
 
+header('Access-Control-Allow-Origin: *');
+
 require( '../config.php' );
 
 // interpret query vars
